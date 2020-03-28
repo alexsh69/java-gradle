@@ -1,0 +1,47 @@
+plugins {
+    id 'java'
+}
+
+group 'JVMBT'
+jar.baseName = 'test-proj'
+version '1.0'
+
+sourceCompatibility = 1.8
+
+apply plugin: 'java'
+
+repositories {
+    mavenCentral()
+}
+
+jar {
+    manifest {
+        attributes(
+                'Main-Class': 'JvmbtGradle',
+        )
+    }
+}
+
+task fatJar(type: Jar) {
+    manifest.from jar.manifest
+    classifier = 'full'
+    baseName = 'fatJar-test'
+    from {
+        configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
+    } {
+        exclude "META-INF/*.SF"
+        exclude "META-INF/*.DSA"
+        exclude "META-INF/*.RSA"
+        exclude "META-INF/NOTICE"
+        exclude "META-INF/LICENSE"
+    }
+    with jar
+}
+
+dependencies {
+    compile(
+            ['org.apache.logging.log4j:log4j-api:2.7'],
+            ['org.apache.logging.log4j:log4j-core:2.7'],
+            ['org.apache.logging.log4j:log4j-slf4j-impl:2.7']
+    )
+}
